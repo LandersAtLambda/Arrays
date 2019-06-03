@@ -28,7 +28,7 @@ Array *create_array(int capacity)
   arr->count = 0;
   // Allocate memory for elements
   arr->elements = malloc(capacity * sizeof(char *));
-  return 0;
+  return arr;
 }
 
 /*****
@@ -98,16 +98,30 @@ char *arr_read(Array *arr, int index)
  *****/
 void arr_insert(Array *arr, char *element, int index)
 {
-
   // Throw an error if the index is greater than the current count
+  if (index > arr->count)
+  {
+    printf("Index out of range");
+  }
 
   // Resize the array if the number of elements is over capacity
+  if (arr->count == arr->capacity)
+  {
+    resize_array(arr);
+  }
 
   // Move every element after the insert index to the right one position
+  int counter = index;
 
+  for (int i = arr->count - 1; i >= index; i--)
+  {
+    arr->elements[i + 1] = arr->elements[i];
+  }
+  arr->elements[index] = strdup(element);
   // Copy the element (hint: use `strdup()`) and add it to the array
 
   // Increment count by 1
+  arr->count++;
 }
 
 /*****
@@ -118,16 +132,15 @@ void arr_append(Array *arr, char *element)
 
   // Resize the array if the number of elements is over capacity
   // or throw an error if resize isn't implemented yet.
-  if (arr->count > arr->capacity)
+  if (arr->count == arr->capacity)
   {
     resize_array(arr);
   }
-  arr->elements[arr->count] = element;
-  arr->count++;
-
   // Copy the element and add it to the end of the array
-
+  char *copy_element = strdup(element);
+  arr->elements[arr->count] = copy_element;
   // Increment count by 1
+  arr->count++;
 }
 
 /*****
@@ -143,13 +156,13 @@ void arr_remove(Array *arr, char *element)
 
   int current = 0;
 
-  while (arr->elements[current] != element)
+  // printf("Current: %s", arr->elements[1]);
+  while (strcmp(arr->elements[current], element) != 0)
   {
     current++;
   }
-
   // Shift over every element after the removed element to the left one position
-  while (current < arr->count - 1)
+  while (current < arr->count)
   {
     arr->elements[current] = arr->elements[current + 1];
     current++;
@@ -183,9 +196,13 @@ int main(void)
 
   Array *arr = create_array(1);
 
+  arr_print(arr);
   arr_insert(arr, "STRING1", 0);
+  arr_print(arr);
   arr_append(arr, "STRING4");
+  arr_print(arr);
   arr_insert(arr, "STRING2", 0);
+  arr_print(arr);
   arr_insert(arr, "STRING3", 1);
   arr_print(arr);
   arr_remove(arr, "STRING3");
