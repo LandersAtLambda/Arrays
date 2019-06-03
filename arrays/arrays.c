@@ -28,6 +28,7 @@ Array *create_array(int capacity)
   arr->count = 0;
   // Allocate memory for elements
   arr->elements = malloc(capacity * sizeof(char *));
+  return 0;
 }
 
 /*****
@@ -48,14 +49,19 @@ void destroy_array(Array *arr)
  *****/
 void resize_array(Array *arr)
 {
+  char **temp_elements = arr->elements;
 
   // Create a new element storage with double capacity
-
+  arr->elements = malloc((arr->capacity * sizeof(char *)) * 2);
   // Copy elements into the new storage
-
+  for (int i = 0; i < arr->count; i++)
+  {
+    arr->elements[i] = temp_elements[i];
+  }
   // Free the old elements array (but NOT the strings they point to)
-
+  free(temp_elements);
   // Update the elements and capacity to new values
+  arr->capacity = arr->capacity * 2;
 }
 
 /************************************
@@ -73,6 +79,14 @@ char *arr_read(Array *arr, int index)
 {
 
   // Throw an error if the index is greater or equal to than the current count
+  if (index < arr->count)
+  {
+    return arr->elements[index];
+  }
+  else
+  {
+    return NULL;
+  }
 
   // Otherwise, return the element at the given index
 }
@@ -104,6 +118,12 @@ void arr_append(Array *arr, char *element)
 
   // Resize the array if the number of elements is over capacity
   // or throw an error if resize isn't implemented yet.
+  if (arr->count > arr->capacity)
+  {
+    resize_array(arr);
+  }
+  arr->elements[arr->count] = element;
+  arr->count++;
 
   // Copy the element and add it to the end of the array
 
